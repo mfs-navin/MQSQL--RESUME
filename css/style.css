@@ -1,0 +1,128 @@
+body {
+	background-color: #ddd;
+}
+
+.main {
+	justify-content: center;
+}
+
+#signup label{
+	display: inline-block;
+}
+
+.justify-content-center {
+	justify-content: center !important;
+}
+
+.card-header {
+	padding: 0.75rem 1.25rem;
+}
+
+.mt-1 {
+	margin-top: .25rem !important;
+}
+
+.float-right {
+	float: right !important;
+}
+
+.card-title {
+	margin-bottom: .75rem;
+}
+
+.mt-2 {
+	margin-top: .5rem !important;
+}
+
+.card-body {
+	padding: 1.25rem;
+}
+
+div {
+	display: block;
+}
+
+.form-check-input{
+	height: 0.8rem;
+	width: 100%;
+	
+}
+
+#about {
+	height: 100px;
+}
+
+.checkbox, label{
+	margin-right: 15px;
+}
+
+.form-row> .col {
+	padding-right: 5px;
+	padding-left: 5px;
+	margin-bottom: 1rem;	
+}
+.form-group {
+	margin-bottom: 1rem;
+}
+
+label {
+	display: block;
+	margin-bottom: .5rem;
+	margin-top:
+
+}
+
+input {
+	border-radius: 0.25rem;
+    border: 1px solid #bab;
+}
+
+.btn-block {
+	display: block;
+	width: 100%;
+}
+
+.error{
+	display: none;
+}		
+
+.error_show{
+	color: red;
+	margin-left: 10px;
+	font-size: 13px;
+}
+
+input.invalid, textarea.invalid, select.invalid{
+	border: 2px solid red;
+}
+
+input.valid, textarea.valid, select.valid{
+	border: 2px solid green;
+}
+
+.accordion {
+  background-color: green;
+  color: white;
+  cursor: pointer;
+  padding: 18px;
+  width: 100%;
+  border: none;
+  text-align: center;
+  outline: none;
+  font-size: 25px;
+  transition: 0.4s;
+  border: 1px solid black;
+  margin-bottom: 2px;
+}
+
+.active, .accordion:hover {
+  background-color: #ccc;
+}
+
+.panel {
+  padding: 0 18px;
+  background-color: white;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.2s ease-out;
+}
