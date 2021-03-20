@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Mar 19, 2021 at 01:23 PM
+-- Generation Time: Mar 20, 2021 at 08:26 AM
 -- Server version: 8.0.23
 -- PHP Version: 7.2.21
 
@@ -33,6 +33,7 @@ CREATE TABLE `resume_data` (
   `gender` enum('m','f') NOT NULL,
   `email` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `contact_number` varchar(30) NOT NULL,
+  `skills` varchar(50) NOT NULL,
   `photo` varchar(30) NOT NULL,
   `about` text NOT NULL,
   `address` varchar(50) NOT NULL,
@@ -45,9 +46,11 @@ CREATE TABLE `resume_data` (
 -- Dumping data for table `resume_data`
 --
 
-INSERT INTO `resume_data` (`id`, `name`, `gender`, `email`, `contact_number`, `photo`, `about`, `address`, `edu_qualification`, `linkedin`, `github`) VALUES
-(1, 'Navin Chandra', 'm', 'navinchndr@gmail.com', '8789797797', '20210317173814.png', 'whejbsdhsbdjbsj', 'wjkenkjwnekjwnk', 'higher_secondary', 'http://linkedin.com/navin', 'http://github.com/navin'),
-(4, 'Navin Chandra', 'f', 'navinc@mindfiresolutions.com', '1234567891', '20210317174911.png', '2nd about ', 'second address', 'higher_secondary', 'http://linkedin.com/navin', 'http://github.com/navin');
+INSERT INTO `resume_data` (`id`, `name`, `gender`, `email`, `contact_number`, `skills`, `photo`, `about`, `address`, `edu_qualification`, `linkedin`, `github`) VALUES
+(1, 'Navin Chandra', 'm', 'navinchndr@gmail.com', '8789797797', '', '20210317173814.png', 'whejbsdhsbdjbsj', 'wjkenkjwnekjwnk', 'higher_secondary', 'http://linkedin.com/navin', 'http://github.com/navin'),
+(4, 'Navin Chandra', 'f', 'navinc@mindfiresolutions.com', '1234567891', '', '20210317174911.png', '2nd about ', 'second address', 'higher_secondary', 'http://linkedin.com/navin', 'http://github.com/navin'),
+(5, 'Rohan Naik', 'm', 'navinc@mindfire.com', '1111111111', '4', '20210320081309.png', 'hhhhhhhhhhhhhhh', 'hhhhhhhhhhhhh', 'post_graduate', 'http://linkedin.com/navin', 'http://github.com/navin'),
+(12, 'Rohan Naik', 'm', 'navinc@mindfiree.com', '1111111112', 'c++, java, python, html, ', '20210320081744.png', 'hhhhhhhhhhhhhhhhh', 'hhhhhhhhhhhhhhh', 'post_graduate', 'http://linkedin.com/navinn', 'http://github.com/navinn');
 
 -- --------------------------------------------------------
 
@@ -129,7 +132,7 @@ ALTER TABLE `user_skills`
 -- AUTO_INCREMENT for table `resume_data`
 --
 ALTER TABLE `resume_data`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `resume_data_user_skills`

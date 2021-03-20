@@ -1,20 +1,22 @@
 <?php
 	session_start();
 
-if($_SESSION["name"])
+if(isset($_SESSION["name"]))
 {
 ///Variables to store session data
     $name = $_SESSION["name"];
     $gender = $_SESSION["gender"];
     $email = $_SESSION["email"];
     $phone = $_SESSION["phone"];
-    $skills = count($_SESSION["skills"]);
+    $skills = $_SESSION["skills"];
     $photo = $_SESSION["profile_pic"];
     $about = $_SESSION["about"];
     $address = $_SESSION["addr"];
     $education = $_SESSION["education"];
     $linkedin = $_SESSION["linkedin"];
     $github = $_SESSION["github"];
+
+    $db_skills = '';
 
 /// Variable to connect to the database
 	$servername = "localhost";
@@ -36,7 +38,11 @@ if($_SESSION["name"])
 	}
 	echo "Email: " . $email . "<br />";
 	echo "Phone: " . $phone . "<br />";
-	echo "Skill: " . $skills . "<br/>";
+	echo "Skill: " ;
+	foreach ($skills as $key => $value) {
+		echo  $value .", ";
+		$db_skills = $db_skills . $value . ', ';
+	}
 	echo "<br/>";
 	echo "Photo: " . $photo ."<br/>";
 	echo '<img src="../upload/'.$photo .'" alt="Random image" />'."<br /><br />";
@@ -45,13 +51,14 @@ if($_SESSION["name"])
 	echo "Education Qualification: " . $education . "<br />";
 	echo "Linkedin url: ". $linkedin. "<br/>";
 	echo "Github url: ". $github. "<br/>";
-}
+
+
 
 /// Connecting database
 	$servername = "localhost";
 	$username = "root";
 	$password = "mindfire";
-	$dbname = "mindfire";
+	$dbname = "user_resume";
 
 // Create connection
 	$conn = new mysqli($servername, $username, $password, $dbname);
@@ -61,7 +68,7 @@ if($_SESSION["name"])
 	  die("Connection failed: " . $conn->connect_error);
 	}
 
-	$sql = "INSERT INTO resume_data (id, name, gender, email, contact_number, skills, photo, about, address, edu_qualification, linkedin, github) VALUES (NULL, '$name', '$gender', '$email', '$phone', '$skills', '$photo', '$about', '$address', '$education', '$linkedin', '$github')";
+	$sql = "INSERT INTO resume_data (id, name, gender, email, contact_number, skills, photo, about, address, edu_qualification, linkedin, github) VALUES (NULL, '$name', '$gender', '$email', '$phone', '$db_skills', '$photo', '$about', '$address', '$education', '$linkedin', '$github')";
 
 	if ($conn->query($sql) === TRUE) {
 		
@@ -78,9 +85,14 @@ if($_SESSION["name"])
 	$conn->close();
 
 
-/// Destroying session
+// Destroying session
 	session_unset();
 	session_destroy();
+}
+
+else{
+	echo "session ended or session not initialized.";
+}
 
 
 ?>
