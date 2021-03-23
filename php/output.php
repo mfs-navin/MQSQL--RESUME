@@ -21,96 +21,73 @@ if(isset($_SESSION["email"]))
 		die("Connection failed: " . $conn->connect_error);
 	}
 
-	$sql_resume_fetch = "SELECT id FROM resume WHERE email = '$email'";
+// SQL query to fetch the resume details for the user who filled the form
+	$sql_resume_fetch = "SELECT * FROM resume WHERE email = '$email'";
 
-	if ($resume_record = $conn->query($sql_resume_fetch) === TRUE) {
+	$resume = $conn->query($sql_resume_fetch);
 
- /// Successfull insertion of data
-		echo "Record fetched successfully from resume table";
-	} 
-
-	else 
-	{
-
- /// Error fetching data
-		echo "Error: " . $sql_resume_fetch . "<br>" . $conn->error;
-	}
-
-	$user_id = $resume_record->fetch_assoc()['id'];
+ /// Error fetching user's resume data
+	if ($resume->num_rows < 1)
+		echo "Error: " . $sql_resume_fetch . "<br>" . $conn->error;	 
 
 
-	$sql_ouput = "SELECT * FROM resume WHERE email = '$email' ";
-
-	if ($resume = $conn->query($sql_ouput) === TRUE) {
-
-  /// Successfull insertion of data
-		echo "Record fetched successfully";
-
-	} 
-
-	else {
-
-  /// Error inserting data
-		echo "Error: " . $sql_output . "<br>" . $conn->error;
-	}
+	$resume_record = $resume->fetch_assoc();
+	$user_id = $resume_record['id'];
 
 
-	$sql_skills = "SELECT user_skills.user_id , user_skills.skill_id, skills.skill FROM user_skills INNER JOIN skills ON user_skills.skill_id = skills.id WHERE user_skills.user_id = '$user_id' ";
+// SQL query to fetch all user skills
+	$sql_skills = "SELECT skills.skill FROM user_skills INNER JOIN skills ON user_skills.skill_id = skills.id WHERE user_skills.user_id = $user_id ";
 
-	if ($skills = $conn->query($sql_ouput) === TRUE) {
+	$skills = $conn->query($sql_skills);
 
-  /// Successfull insertion of data
-		echo "Record fetched successfully";
-
-	} 
-
-	else {
-
-  /// Error inserting data
+/// Error fetching user skills data
+	if ($skills->num_rows < 1)
 		echo "Error: " . $sql_skills . "<br>" . $conn->error;
-	}
+
 
 	if ($resume->num_rows > 0 && $skills->num_rows > 0) 
 	{
-		$resume_row = $resume->fetch_assoc();
 
 ///Displaying the data entered by the user using session data
 		echo "Your inputs:". "<br />";
 		echo "-------------------------------------". "<br />";
-		echo "Name: " . $resume_row['name'] . "<br />";
+		echo "Name: " . $resume_record['name'] . "<br />";
 		echo "Gender:";
-		if ($resume_row['gender']==='m') {
+		if ($resume_record['gender']==='m') {
 			echo "Male" . "<br/>";
 		}
 		else{
 			echo "Female" . "<br/>";
 		}
-		echo "Email: " . $resume_row['email'] . "<br />";
-		echo "Phone: " . $resume_row['contact_number'] . "<br />";
+		echo "Email: " . $resume_record['email'] . "<br />";
+		echo "Phone: " . $resume_record['contact_number'] . "<br />";
 		echo "Skill: " ;
 		while($row= $skills->fetch_assoc())
 		{
-			$row['skill'] . ", ";
+			echo $row['skill'] . ", ";
 		}
 		echo "<br/>";
-		echo "Photo: " . $resume_row['photo'] ."<br/>";
-		echo '<img src="../upload/'.$resume_row['photo'] .'" alt="Random image" />'."<br /><br />";
-		echo "About: " . $resume_row['about'] . "<br />";
-		echo "Address: " . $resume_row['address'] . "<br />";
-		echo "Education Qualification: " . $resume_row['edu_qualification'] . "<br />";
-		echo "Linkedin url: ". $resume_row['linkedin']. "<br/>";
-		echo "Github url: ". $resume_row['github']. "<br/>";
+		echo "Photo: " . $resume_record['photo'] ."<br/>";
+		echo '<img src="../upload/'.$resume_record['photo'] .'" alt="Random image" />'."<br /><br />";
+		echo "About: " . $resume_record['about'] . "<br />";
+		echo "Address: " . $resume_record['address'] . "<br />";
+		echo "Education Qualification: " . $resume_record['edu_qualification'] . "<br />";
+		echo "Linkedin url: ". $resume_record['linkedin']. "<br/>";
+		echo "Github url: ". $resume_record['github']. "<br/>";
 
 	}
 
+	else{
+		echo "Error fetching the records";
+	}
 
 
+// Closing connection with database
 	$conn->close();
 
-
-// // Destroying session
-// 	session_unset();
-// 	session_destroy();
+// Destroying session
+	session_unset();
+	session_destroy();
 }
 
 else{

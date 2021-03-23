@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Mar 23, 2021 at 07:58 AM
+-- Generation Time: Mar 23, 2021 at 10:37 AM
 -- Server version: 8.0.23
 -- PHP Version: 7.2.21
 
@@ -33,7 +33,6 @@ CREATE TABLE `resume` (
   `gender` enum('m','f') NOT NULL,
   `email` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `contact_number` varchar(30) NOT NULL,
-  `skills` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `photo` varchar(30) NOT NULL,
   `about` text NOT NULL,
   `address` varchar(50) NOT NULL,
@@ -46,11 +45,11 @@ CREATE TABLE `resume` (
 -- Dumping data for table `resume`
 --
 
-INSERT INTO `resume` (`id`, `name`, `gender`, `email`, `contact_number`, `skills`, `photo`, `about`, `address`, `edu_qualification`, `linkedin`, `github`) VALUES
-(1, 'Navin Chandra', 'm', 'navinchndr@gmail.com', '8789797797', '', '20210317173814.png', 'whejbsdhsbdjbsj', 'wjkenkjwnekjwnk', 'higher_secondary', 'http://linkedin.com/navin', 'http://github.com/navin'),
-(5, 'Rohan Naik', 'm', 'navinc@mindfire.com', '1111111111', '4', '20210320081309.png', 'hhhhhhhhhhhhhhh', 'hhhhhhhhhhhhh', 'post_graduate', 'http://linkedin.com/navin', 'http://github.com/navin'),
-(12, 'Rohan Naik', 'm', 'navinc@mindfiree.com', '1111111112', 'c++, java, python, html, ', '20210320081744.png', 'hhhhhhhhhhhhhhhhh', 'hhhhhhhhhhhhhhh', 'post_graduate', 'http://linkedin.com/navinn', 'http://github.com/navinn'),
-(24, 'John Cena', 'm', 'johncena29@gmail.com', '1234567810', NULL, '20210322130834.png', 'hjjbjhbjhbjbjhbjbjbjhbjhbj hbjhb', 'jhbj bjhbjhbjhb jhb j bjhbj ', 'higher_secondary', 'www.linkedin.com/johncena', 'www.github.com/johncena');
+INSERT INTO `resume` (`id`, `name`, `gender`, `email`, `contact_number`, `photo`, `about`, `address`, `edu_qualification`, `linkedin`, `github`) VALUES
+(1, 'Navin Chandra', 'm', 'navinchndr@gmail.com', '8789797797', '20210317173814.png', 'whejbsdhsbdjbsj', 'wjkenkjwnekjwnk', 'higher_secondary', 'http://linkedin.com/navin', 'http://github.com/navin'),
+(5, 'Rohan Naik', 'm', 'navinc@mindfire.com', '1111111111', '20210320081309.png', 'hhhhhhhhhhhhhhh', 'hhhhhhhhhhhhh', 'post_graduate', 'http://linkedin.com/navin', 'http://github.com/navin'),
+(12, 'Rohan Naik', 'm', 'navinc@mindfiree.com', '1111111112', '20210320081744.png', 'hhhhhhhhhhhhhhhhh', 'hhhhhhhhhhhhhhh', 'post_graduate', 'http://linkedin.com/navinn', 'http://github.com/navinn'),
+(29, 'John Cena', 'f', 'johncena29@gmail.com', '1234567810', '20210323093513.png', 'You cant see me.', 'You cant see my address too', 'higher_secondary', 'www.linkedin.com/johncena', 'www.github.com/johncena');
 
 -- --------------------------------------------------------
 
@@ -81,7 +80,6 @@ INSERT INTO `skills` (`id`, `skill`) VALUES
 --
 
 CREATE TABLE `user_skills` (
-  `id` int NOT NULL,
   `user_id` int NOT NULL,
   `skill_id` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -90,10 +88,12 @@ CREATE TABLE `user_skills` (
 -- Dumping data for table `user_skills`
 --
 
-INSERT INTO `user_skills` (`id`, `user_id`, `skill_id`) VALUES
-(19, 1, 1),
-(20, 1, 2),
-(21, 1, 3);
+INSERT INTO `user_skills` (`user_id`, `skill_id`) VALUES
+(1, 1),
+(29, 1),
+(1, 2),
+(1, 3),
+(29, 4);
 
 --
 -- Indexes for dumped tables
@@ -118,8 +118,7 @@ ALTER TABLE `skills`
 -- Indexes for table `user_skills`
 --
 ALTER TABLE `user_skills`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `user_id_resume_skill_foreign` (`user_id`),
+  ADD PRIMARY KEY (`user_id`,`skill_id`),
   ADD KEY `skill_id` (`skill_id`);
 
 --
@@ -130,19 +129,13 @@ ALTER TABLE `user_skills`
 -- AUTO_INCREMENT for table `resume`
 --
 ALTER TABLE `resume`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
 
 --
 -- AUTO_INCREMENT for table `skills`
 --
 ALTER TABLE `skills`
   MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
-
---
--- AUTO_INCREMENT for table `user_skills`
---
-ALTER TABLE `user_skills`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- Constraints for dumped tables

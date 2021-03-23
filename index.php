@@ -18,21 +18,16 @@ if ($conn->connect_error) {
 	die("Connection failed: " . $conn->connect_error);
 }
 
+// SQL query to fetch the id's of all the skills
 $sql = "SELECT id, skill FROM skills";
 
 $skills = $conn->query($sql);
 
-if ($skills->num_rows > 0) {
+if ($skills->num_rows < 1) {
 
-                            /// Successfull insertion of data
-	echo "Fetched successfully";
-
+// Error fetching records
+    echo "0 rows selected";
 } 
-
-else {
-                            /// Error inserting data
-	echo "0 rows selected";
-}
 
 ?>
 
@@ -68,13 +63,13 @@ else {
 					</header>
 					<article class="card-body">
 						<!--Form Body-->       
-						<form  id="signup" class="form" method="post"  enctype="multipart/form-data" >
+						<form  id="signup" class="form" method="post" enctype="multipart/form-data" >
 
 							<!--Name Field-->       
 							<div class="row form-group">
 								<div class="col">
 									<label  for="name">Name</label>
-									<input type="text" class="form-control" id="name" name="name">
+									<input type="text" class="form-control" id="name" name="name" value="<?php echo isset($_POST['name'])? $_POST['name']: '' ;?>">
 									<span class="error" id="error_name">This field is required</span>
 								</div>                                                      
 							</div>
@@ -83,10 +78,10 @@ else {
 							<div class="form-group">
 								<label>Gender</label>
 								<div>
-									<label><input type="radio" name="gender" value="1"> Male</label>
+									<label><input type="radio" name="gender" value="m"> Male</label>
 								</div>
 								<div>
-									<label><input type="radio" name="gender" value="2"> Female</label>
+									<label><input type="radio" name="gender" value="f"> Female</label>
 								</div>
 								<span class="error" id="error_gender">Please select your gender</span>
 							</div>
@@ -94,14 +89,14 @@ else {
 							<!--Email Field-->      
 							<div class="form-group">
 								<label for="email">Email Address</label>
-								<input type="email" class="form-control" id="email" name="email">
+								<input type="email" class="form-control" id="email" name="email" value="<?php echo isset($_POST['email'])? $_POST['email']: '' ;?>">
 								<span class="error" id="error_email">A valid email address is required</span>
 							</div>
 
 							<!--Contact Number Field-->     
 							<div class="form-group">
 								<label for="phone">Contact Number</label>
-								<input type="text" class="form-control"  name="phone" id="phone">
+								<input type="text" class="form-control"  name="phone" id="phone" value="<?php echo isset($_POST['phone'])? $_POST['phone']: '' ;?>">
 								<span class="error" id="error_phone">This field is required</span>
 							</div>
 
@@ -122,7 +117,7 @@ else {
 							<!--Profile Picture Field-->        
 							<div class="form-group">
 								<label for="profile_pic">Upload Profile Photo:</label>
-								<input type="file" class="form-control" name="profile_pic" id="profile_pic">
+								<input type="file" class="form-control" name="profile_pic" id="profile_pic" value="<?php echo isset($_POST['profile_pic'])? $_POST['profile_pic']: '' ;?>">
 
 								<input type="button" class="mt-2" name="upload" value="Upload" id="upload">
 								<span class="error">Please upload a profile photo</span>
@@ -131,12 +126,12 @@ else {
 							<!--User About Field-->     
 							<div class="form-group">
 								<label for="about">About</label>
-								<textarea class="form-control" rows="3" name="about" placeholder="Enter something about yourself." id="about"></textarea>
+								<textarea class="form-control" rows="3" name="about" id="about" placeholder="Enter something about yourself" value="<?php echo isset($_POST['name'])? $_POST['name']: '';?>"></textarea>
 								<span class="error" id="error_about">This field is required</span>
 							</div>
 							<div class="form-group">
 								<label for="addr">Address</label>
-								<input type="text" class="form-control" id="addr" name="addr">
+								<input type="text" class="form-control" id="addr" name="addr" value="<?php echo isset($_POST['addr'])? $_POST['addr']: '' ;?>">
 								<span class="error" id="error_address">This field is required</span>
 							</div>
 
@@ -159,10 +154,10 @@ else {
 							<div class="form-group">
 								<label for="links">Professional Links:</label>
 								<br>
-								<input type="text" class="form-control" name="linkedin" placeholder="LinkedIn link" id="linkedin">
+								<input type="text" class="form-control" name="linkedin" placeholder="LinkedIn link" id="linkedin" value="<?php echo isset($_POST['linkedin'])? $_POST['linkedin']: '' ;?>">
 								<span class="error" id="error_linkedin">This field is required</span>
 								<br>
-								<input type="text" class="form-control" name="github" placeholder="Github" id="github">
+								<input type="text" class="form-control" name="github" placeholder="Github" id="github" value="<?php echo isset($_POST['github'])? $_POST['github']: '' ;?>">
 								<span class="error" id="error_github">This field is required</span>
 							</div>
 
@@ -410,13 +405,15 @@ else {
 									{
 
                             /// Error inserting data
-										//$sql_error =TRUE;
+										$sql_error =TRUE;
 										echo "Error: " . $sql_resume . "<br>" . $conn->error;
 									}
 
 									$sql_resume_fetch = "SELECT id FROM resume WHERE email = '$email'";
 
-									if ($resume_record = $conn->query($sql_resume_fetch) === TRUE) {
+									$resume_record = $conn->query($sql_resume_fetch);
+
+									if ($resume_record->num_rows > 0) {
 
                             /// Successfull insertion of data
 										echo "Record fetched successfully from resume table";
@@ -428,7 +425,7 @@ else {
 
 										foreach ($_POST["skills"] as $key => $skill_id) {
 
-											$sql_skills = "INSERT INTO user_skills (id, user_id, skill_id) VALUES (NULL, '$user_id', '$skill_id') ";
+											$sql_skills = "INSERT INTO user_skills (user_id, skill_id) VALUES ($user_id, $skill_id) ";
 
 											if ($conn->query($sql_skills) === TRUE) {
 
@@ -440,7 +437,7 @@ else {
 											else {
 
                             /// Error inserting data
-												//$sql_error =TRUE;
+												$sql_error =TRUE;
 												echo "Error: " . $sql_skills . "<br>" . $conn->error;
 											}
 										}
@@ -451,7 +448,7 @@ else {
 									{
 
                             /// Error fetching data
-										//$sql_error =TRUE;
+										$sql_error =TRUE;
 										echo "Error: " . $sql_resume_fetch . "<br>" . $conn->error;
 									}
 
@@ -473,7 +470,7 @@ else {
 									else {
 
                             /// Error inserting data
-										echo "Error: " . $sql . "<br>" . $conn->error;
+										echo "Errors somewhere";
 									}
 
 									$conn->close();
@@ -492,7 +489,7 @@ else {
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 	<!-- Script for client side validation -->
-	<!-- <script src="js/client_validation.js"></script>
- -->
+	<!-- <script src="js/client_validation.js"></script> -->
+
 </body>
 </html>
