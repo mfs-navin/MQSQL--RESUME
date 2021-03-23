@@ -1,58 +1,10 @@
 <?php
-	session_start();
+session_start();
 
-if(isset($_SESSION["name"]))
+if(isset($_SESSION["email"]))
 {
-///Variables to store session data
-    $name = $_SESSION["name"];
-    $gender = $_SESSION["gender"];
-    $email = $_SESSION["email"];
-    $phone = $_SESSION["phone"];
-    $skills = $_SESSION["skills"];
-    $photo = $_SESSION["profile_pic"];
-    $about = $_SESSION["about"];
-    $address = $_SESSION["addr"];
-    $education = $_SESSION["education"];
-    $linkedin = $_SESSION["linkedin"];
-    $github = $_SESSION["github"];
 
-    $db_skills = '';
-
-/// Variable to connect to the database
-	$servername = "localhost";
-	$username = "username";
-	$password = "password";
-	$dbname = "myDB";    
-
-
-///Displaying the data entered by the user using session data
-    echo "Your inputs:". "<br />";
-	echo "-------------------------------------". "<br />";
-	echo "Name: " . $name . "<br />";
-	echo "Gender:";
-	if ($gender=='m') {
-		echo "Male" . "<br/>";
-	}
-	else{
-		echo "Female" . "<br/>";
-	}
-	echo "Email: " . $email . "<br />";
-	echo "Phone: " . $phone . "<br />";
-	echo "Skill: " ;
-	foreach ($skills as $key => $value) {
-		echo  $value .", ";
-		$db_skills = $db_skills . $value . ', ';
-	}
-	echo "<br/>";
-	echo "Photo: " . $photo ."<br/>";
-	echo '<img src="../upload/'.$photo .'" alt="Random image" />'."<br /><br />";
-	echo "About: " . $about . "<br />";
-	echo "Address: " . $address . "<br />";
-	echo "Education Qualification: " . $education . "<br />";
-	echo "Linkedin url: ". $linkedin. "<br/>";
-	echo "Github url: ". $github. "<br/>";
-
-
+	$email = $_SESSION["email"];
 
 /// Connecting database
 	$servername = "localhost";
@@ -60,30 +12,78 @@ if(isset($_SESSION["name"]))
 	$password = "mindfire";
 	$dbname = "user_resume";
 
-// Create connection
+  // Create connection
 	$conn = new mysqli($servername, $username, $password, $dbname);
 
-// Check connection
-	if ($conn->connect_error) {
-	  die("Connection failed: " . $conn->connect_error);
+  // Check connection
+	if ($conn->connect_error)
+	{
+		die("Connection failed: " . $conn->connect_error);
 	}
 
-	$sql = "INSERT INTO resume_data (id, name, gender, email, contact_number, skills, photo, about, address, edu_qualification, linkedin, github) VALUES (NULL, '$name', '$gender', '$email', '$phone', '$db_skills', '$photo', '$about', '$address', '$education', '$linkedin', '$github')";
+// SQL query to fetch the resume details for the user who filled the form
+	$sql_resume_fetch = "SELECT * FROM resume WHERE email = '$email'";
 
-	if ($conn->query($sql) === TRUE) {
-		
-/// Successfull insertion of data
-	  echo "New record created successfully";
-	} 
+	$resume = $conn->query($sql_resume_fetch);
 
-	else {
+ /// Error fetching user's resume data
+	if ($resume->num_rows < 1)
+		echo "Error: " . $sql_resume_fetch . "<br>" . $conn->error;	 
 
-/// Error inserting data
-	  echo "Error: " . $sql . "<br>" . $conn->error;
+
+	$resume_record = $resume->fetch_assoc();
+	$user_id = $resume_record['id'];
+
+
+// SQL query to fetch all user skills
+	$sql_skills = "SELECT skills.skill FROM user_skills INNER JOIN skills ON user_skills.skill_id = skills.id WHERE user_skills.user_id = $user_id ";
+
+	$skills = $conn->query($sql_skills);
+
+/// Error fetching user skills data
+	if ($skills->num_rows < 1)
+		echo "Error: " . $sql_skills . "<br>" . $conn->error;
+
+
+	if ($resume->num_rows > 0 && $skills->num_rows > 0) 
+	{
+
+///Displaying the data entered by the user using session data
+		echo "Your inputs:". "<br />";
+		echo "-------------------------------------". "<br />";
+		echo "Name: " . $resume_record['name'] . "<br />";
+		echo "Gender:";
+		if ($resume_record['gender']==='m') {
+			echo "Male" . "<br/>";
+		}
+		else{
+			echo "Female" . "<br/>";
+		}
+		echo "Email: " . $resume_record['email'] . "<br />";
+		echo "Phone: " . $resume_record['contact_number'] . "<br />";
+		echo "Skill: " ;
+		while($row= $skills->fetch_assoc())
+		{
+			echo $row['skill'] . ", ";
+		}
+		echo "<br/>";
+		echo "Photo: " . $resume_record['photo'] ."<br/>";
+		echo '<img src="../upload/'.$resume_record['photo'] .'" alt="Random image" />'."<br /><br />";
+		echo "About: " . $resume_record['about'] . "<br />";
+		echo "Address: " . $resume_record['address'] . "<br />";
+		echo "Education Qualification: " . $resume_record['edu_qualification'] . "<br />";
+		echo "Linkedin url: ". $resume_record['linkedin']. "<br/>";
+		echo "Github url: ". $resume_record['github']. "<br/>";
+
 	}
 
+	else{
+		echo "Error fetching the records";
+	}
+
+
+// Closing connection with database
 	$conn->close();
-
 
 // Destroying session
 	session_unset();
