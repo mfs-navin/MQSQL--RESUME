@@ -26,7 +26,7 @@ $skills = $conn->query($sql);
 if ($skills->num_rows < 1) {
 
 // Error fetching records
-    echo "0 rows selected";
+	echo "No results for skills table. Please check for SQL query statement";
 } 
 
 ?>
@@ -126,7 +126,7 @@ if ($skills->num_rows < 1) {
 							<!--User About Field-->     
 							<div class="form-group">
 								<label for="about">About</label>
-								<textarea class="form-control" rows="3" name="about" id="about" placeholder="Enter something about yourself" value="<?php echo isset($_POST['name'])? $_POST['name']: '';?>"></textarea>
+								<textarea class="form-control" rows="3" name="about" id="about" placeholder="Enter something about yourself"></textarea>
 								<span class="error" id="error_about">This field is required</span>
 							</div>
 							<div class="form-group">
@@ -193,7 +193,16 @@ if ($skills->num_rows < 1) {
 
 								$error = false;
 
-                                // Name Validation
+							//SQL query to check if the email is already registered
+								$sql_mail = "SELECT * FROM resume WHERE email = '$email' ";
+								$res_mail = $conn->query($sql_mail);
+
+							// SQL query to check if the phone number is already registered
+								$sql_phone = "SELECT * FROM resume WHERE contact_number = '$phone' ";
+								$res_phone = $conn->query($sql_phone);
+
+
+                            // Name Validation
 								if ( empty($name))
 								{
 									echo "Please enter your name" . "<br />";
@@ -210,7 +219,7 @@ if ($skills->num_rows < 1) {
 									$error = true;
 								}
 
-                                // Gender Validation
+                            // Gender Validation
 								if (empty($_POST["gender"])) {
 									echo "Please choose your gender". "<br />";
 									$error = true;
@@ -220,7 +229,7 @@ if ($skills->num_rows < 1) {
 								}
 
 
-                                // Skills validation
+                            // Skills validation
 								if (empty($_POST["skills"])) {
 									echo "Please choose atleast one skill" . "<br/>";
 									$error = true;
@@ -230,7 +239,7 @@ if ($skills->num_rows < 1) {
 								}
 
 
-                                //Email Validation
+                            //Email Validation
 								if (empty($email)) {
 
 									echo "Please enter your email" . "<br />";
@@ -243,7 +252,13 @@ if ($skills->num_rows < 1) {
 									$error = true;
 								}
 
-                                // Contact Number Validation
+							// Checking if the email is already registered
+								if ($res_mail->num_rows > 0) {
+									echo "Email already registered. Please enter a new email.";
+									$error = true;
+								}
+
+                            // Contact Number Validation
 								if (empty($phone)) {
 									echo "Please enter your contact number" . "<br />";
 									$error = true;
@@ -258,12 +273,21 @@ if ($skills->num_rows < 1) {
 									echo "Your phone number should be 10 digits long" . "<br />";
 									$error = true;
 								}
+								else
+								{
 
-                                //File validation    
+							// Checking if the contact number is already registered		
+									if ($res_phone->num_rows > 0) {
+										echo "Contact number already registered. Please a new Contact number.";
+										$error = true;
+									}
+								}
+
+                            //File validation    
 								if(!empty($_FILES["profile_pic"]["name"]))
 								{
 
-                                //user has browsed a file to upload
+                            //user has browsed a file to upload
 									if($_FILES["profile_pic"]["error"] == 0)
 									{
 
@@ -282,8 +306,12 @@ if ($skills->num_rows < 1) {
                                             //from dot position to the end is the extension
 											$extension = substr($_FILES["profile_pic"]["name"], $dot_pos);
 
+											// separating filename and extension name
+											$file_name = explode('.', $_FILES["profile_pic"]["name"]);
+
                                             //use date function to get random number
-											$random_name = date("YmdHis");
+											$random_name = $file_name[0].date("YmdHis").rand(100,999);
+
 
                                             //add date function value with extension to get unique new file name
 											$new_name = $random_name . $extension;
@@ -387,7 +415,6 @@ if ($skills->num_rows < 1) {
 								if(!$error)
 								{
 
-                            /// Connecting database
 
 									$sql_error = FALSE;
 
@@ -395,81 +422,74 @@ if ($skills->num_rows < 1) {
 									
 									$sql_resume = "INSERT INTO resume (id, name, gender, email, contact_number, photo, about, address, edu_qualification, linkedin, github) VALUES (NULL, '$name', '$gender', '$email', '$phone', '$photo', '$about', '$address', '$education', '$linkedin', '$github')";
 
-									if ($conn->query($sql_resume) === TRUE) {
-
-                            /// Successfull insertion of data
-										echo "New record created successfully for resume table";
-									} 
-
-									else 
+									if ($conn->query($sql_resume) === TRUE) 
 									{
 
-                            /// Error inserting data
-										$sql_error =TRUE;
-										echo "Error: " . $sql_resume . "<br>" . $conn->error;
-									}
-
-									$sql_resume_fetch = "SELECT id FROM resume WHERE email = '$email'";
-
-									$resume_record = $conn->query($sql_resume_fetch);
-
-									if ($resume_record->num_rows > 0) {
-
                             /// Successfull insertion of data
-										echo "Record fetched successfully from resume table";
+										$sql_resume_fetch = "SELECT id FROM resume WHERE email = '$email'";
 
-										$user_id = $resume_record->fetch_assoc()['id'];
+										$resume_record = $conn->query($sql_resume_fetch);
 
-										echo "user_id completed";
+										if ($resume_record->num_rows > 0)
+										{
 
+										// Fetching user id for insertion in pivot table
+											$user_id = $resume_record->fetch_assoc()['id'];
 
-										foreach ($_POST["skills"] as $key => $skill_id) {
+										// Inserting user id and skill id in pivot table to map user resume data with user skills 
+											foreach ($_POST["skills"] as $key => $skill_id) {
 
-											$sql_skills = "INSERT INTO user_skills (user_id, skill_id) VALUES ($user_id, $skill_id) ";
+												$sql_skills = "INSERT INTO user_skills (user_id, skill_id) VALUES ($user_id, $skill_id) ";
 
-											if ($conn->query($sql_skills) === TRUE) {
+												if (!$conn->query($sql_skills) === TRUE) {
 
-                            /// Successfull insertion of data
-												echo "New record created successfully for skills table";
+												// ERROR inserting data in pivot table
+													$sql_error =TRUE;
+													echo "Error in insertion of data in database";
+												
+												} 
 
-											} 
-
-											else {
+												else {
 
                             /// Error inserting data
-												$sql_error =TRUE;
-												echo "Error: " . $sql_skills . "<br>" . $conn->error;
+													}
 											}
-										}
 
-									} 
+										} 
 
-									else 
-									{
+										else 
+										{
 
                             /// Error fetching data
+											$sql_error =TRUE;
+											echo "Error fetching results from the database. Please check.";
+										}
+									} 
+
+									else 
+									{
+
+                            /// Error inserting data
 										$sql_error =TRUE;
-										echo "Error: " . $sql_resume_fetch . "<br>" . $conn->error;
+										echo "Error inserting resume data in database. Please check.";
 									}
 
-
-
-									if ($sql_error === FALSE) {
-
-                            /// Successfull insertion of data
-										echo "NO ERROR";
+							// Checking if any error in executing SQL statements		
+									if ($sql_error === FALSE)
+									{
 
                                 /// Creating session variables
 										$_SESSION["email"] = $email;
 
 										$conn->close();
-
+										
+								// Redirecting to output page to show user entries
 										echo "<script>location.href='php/output.php';</script>";
 									} 
 
 									else {
 
-                            /// Error inserting data
+                            	/// Error inserting data
 										echo "Errors somewhere";
 									}
 
@@ -489,7 +509,7 @@ if ($skills->num_rows < 1) {
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 	<!-- Script for client side validation -->
-	<script src="js/client_validation.js"></script>
+	<!-- <script src="js/client_validation.js"></script> -->
 
 </body>
 </html>
